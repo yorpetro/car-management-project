@@ -10,7 +10,7 @@ class CarsIn(BaseModel):
 
 
 class GarageOut(BaseModel):
-    id: int
+    garage_id: int
     name: str
     location: str
     city: str
@@ -21,7 +21,7 @@ class GarageOut(BaseModel):
 
 
 class CarsOut(BaseModel):
-    id: int
+    car_id: int
     make: str
     model: str
     production_year: int
