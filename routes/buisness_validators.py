@@ -3,7 +3,7 @@ from typing import Type
 from fastapi.exceptions import HTTPException
 from sqlalchemy.orm import Session
 
-from orm import Cars
+from orm import Cars, Garages
 
 
 class CarValidators:
@@ -19,6 +19,21 @@ class CarValidators:
             raise HTTPException(status_code=400, detail="License plate already exists.")
 
     @staticmethod
+    def validate_and_associate_garages(garage_ids: list[int], db: Session):
+        """
+        Validate and associate garage IDs with the car.
+        """
+        # Query the garages using their IDs
+        garages = db.query(Garages).filter(Garages.garage_id.in_(garage_ids)).all()
+
+        # Check if all garage IDs are valid
+        if len(garages) != len(garage_ids):
+            raise HTTPException(status_code=404,
+                                detail="One or more garages not found.")
+
+        return garages
+
+    @staticmethod
     def validate_car_id(car_id: int, db: Session) -> Type[Cars] | None:
         """
         Validates if a car ID exists in the database.
@@ -27,3 +42,14 @@ class CarValidators:
             return car
         else:
             raise HTTPException(status_code=404, detail="Car not found.")
+
+class GarageValidators:
+    @staticmethod
+    def validate_garage_id(garage_id: int, db: Session) -> Type[Cars] | None:
+        """
+        Validates if a garage ID exists in the database.
+        """
+        if garage := db.query(Garages).filter_by(garage_id=garage_id).first():
+            return garage
+        else:
+            raise HTTPException(status_code=404, detail="Garage not found.")
