@@ -1,9 +1,9 @@
 from typing import Type
 
 from fastapi.exceptions import HTTPException
-from sqlalchemy.orm import Session
+from sqlalchemy.orm import Session, Mapped
 
-from orm import Cars, Garages
+from orm import Cars, Garages, Maintenances
 
 
 class CarValidators:
@@ -34,7 +34,7 @@ class CarValidators:
         return garages
 
     @staticmethod
-    def validate_car_id(car_id: int, db: Session) -> Type[Cars] | None:
+    def validate_car_id(car_id: int | Mapped[int], db: Session) -> Type[Cars] | None:
         """
         Validates if a car ID exists in the database.
         """
@@ -45,7 +45,7 @@ class CarValidators:
 
 class GarageValidators:
     @staticmethod
-    def validate_garage_id(garage_id: int, db: Session) -> Type[Cars] | None:
+    def validate_garage_id(garage_id: int | Mapped[int], db: Session) -> Type[Garages] | None:
         """
         Validates if a garage ID exists in the database.
         """
@@ -53,3 +53,15 @@ class GarageValidators:
             return garage
         else:
             raise HTTPException(status_code=404, detail="Garage not found.")
+
+class MaintenanceValidators:
+    @staticmethod
+    def validate_maintenance_id(maintenance_id: int, db: Session)\
+            -> Type[Maintenances] | None:
+        """
+        Validates if a maintenance ID exists in the database.
+        """
+        if maintenance := db.query(Maintenances).filter_by(maintenance_id=maintenance_id).first():
+            return maintenance
+        else:
+            raise HTTPException(status_code=404, detail="Maintenance not found.")

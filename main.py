@@ -1,8 +1,6 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from routes import car_router
-
-from routes.garages import garage_router
+from routes import car_router, garage_router, maintenances_router
 
 app = FastAPI()
 origins = [
@@ -18,6 +16,9 @@ app.add_middleware(
 )
 app.include_router(car_router, tags=["Cars"])
 app.include_router(garage_router, tags=["Garages"])
+app.include_router(maintenances_router, tags=["Maintenances"])
+
+
 @app.get("/")
 def root():
     return {

@@ -1,19 +1,15 @@
-from typing import List, Optional, Type
+from typing import List, Optional
 
 from sqlalchemy.orm import Session
 from fastapi.params import Depends
 from fastapi import APIRouter
 
-from orm import get_db_session, Cars, CarGarageAssociations
+from orm import Cars, CarGarageAssociations
 from models import CarsIn, CarsOut
 from routes.buisness_validators import CarValidators
+from orm.db_session import get_db
 
 car_router = APIRouter()
-
-
-def get_db() -> Session:
-    with get_db_session() as session:
-        yield session
 
 
 @car_router.get("/cars/{car_id}", response_model=CarsOut)
@@ -23,23 +19,23 @@ def get_car(car_id, db: Session = Depends(get_db)):
 
 @car_router.get("/cars", response_model=List[CarsOut])
 def get_all_cars(
-        car_make: Optional[str] = None,
-        garage_id: Optional[int] = None,
-        from_year: Optional[int] = None,
-        to_year: Optional[int] = None,
+        carMake: Optional[str] = None,
+        garageId: Optional[int] = None,
+        fromYear: Optional[int] = None,
+        toYear: Optional[int] = None,
         db: Session = Depends(get_db)
 ):
     query = db.query(Cars)
 
-    if car_make:
-        query = query.filter(Cars.make.ilike(f"%{car_make}%"))
-    if garage_id:
+    if carMake:
+        query = query.filter(Cars.make.ilike(f"%{carMake}%"))
+    if garageId:
         query = query.join(CarGarageAssociations).filter(
-            CarGarageAssociations.garage_id == garage_id)
-    if from_year:
-        query = query.filter(Cars.production_year >= from_year)
-    if to_year:
-        query = query.filter(Cars.production_year <= to_year)
+            CarGarageAssociations.garage_id == garageId)
+    if fromYear:
+        query = query.filter(Cars.production_year >= fromYear)
+    if toYear:
+        query = query.filter(Cars.production_year <= toYear)
 
     return query.all()
 

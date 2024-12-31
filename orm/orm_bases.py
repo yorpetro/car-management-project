@@ -62,7 +62,7 @@ class Maintenances(Base):
     garage_id: Mapped[int] = mapped_column(Integer, ForeignKey("garages.garage_id"),
                                            nullable=False)
     service_type: Mapped[str] = mapped_column(String, nullable=False)
-    scheduled_date: Mapped[datetime] = mapped_column(Date, nullable=False)
+    scheduled_date: Mapped[str] = mapped_column(Date, nullable=False)
 
     car = relationship("Cars", back_populates="maintenances")
     garage = relationship("Garages", back_populates="maintenances")
